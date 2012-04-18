@@ -40,10 +40,9 @@ TEMP = \
 	$(NULL)
 	
 lxmanager_SOURCES = \
-	DesktopConfig.vala \
+	ManagerConfig.vala \
 	Application.vala \
 	ManagerWindow.vala \
-	TEMP.vala \
 	$(exo_SOURCES) \
 	$(gtk_SOURCES) \
 	$(NULL)
@@ -80,6 +79,6 @@ lxmanager_LDADD = \
 	$(MENU_CACHE_LIBS) \
 	$(NULL)
 
-CLEANFILES = $(patsubst %.vala,%.c,$(filter %.vala, $(SOURCES))) lxmanager.stamp
+CLEANFILES = $(patsubst %.vala,%.c,$(filter %.vala, $(SOURCES))) lxmanager_vala.stamp
 
 

@@ -7,7 +7,8 @@
  * it under the terms of the GNU General Public License Version 2.
  * http://www.gnu.org/licenses/gpl-2.0.txt
  * 
- * This software is an experimental fork of PcManFm originally written by Hong Jen Yee aka PCMan for LXDE project.
+ * This software is a simple file manager originally based on LibFm Demo :
+ * http://pcmanfm.git.sourceforge.net/git/gitweb.cgi?p=pcmanfm/libfm;a=blob;f=src/demo/main-win.c
  * 
  * Purpose: The Main Application Class and program's entry point.
  * 
@@ -17,9 +18,11 @@
 namespace Manager {
 
     Application     global_app;
-    Desktop.Config? global_config;
+    Manager.Config? global_config;
     bool            global_debug_mode;
-        
+    
+    uint            global_num_windows = 0;
+    
     public const OptionEntry[] opt_entries = {
         
         {"debug",   'd',    0,  OptionArg.NONE, ref global_debug_mode,  N_("Run In Debug Mode"), null},
@@ -61,7 +64,7 @@ namespace Manager {
             }
             
             // Create the Desktop configuration, this object derivates of Fm.Config.
-            global_config = new Desktop.Config ();
+            global_config = new Manager.Config ();
             
             global_app = new Application ();
             

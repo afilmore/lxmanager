@@ -1,3 +1,4 @@
+*.stamp
 *.geany
 data
 docs
