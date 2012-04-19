@@ -248,21 +248,59 @@ namespace Manager {
             _hpaned = new Gtk.HPaned ();
             _hpaned.set_position (150);
 
-            /*** PLaces View *** 
-            this.left_pane = fm_side_pane_new ();
-            fm_side_pane_set_mode (this.left_pane, FM_SP_PLACES);
-            gtk_paned_add1 (GTK_PANED (this.hpaned), this.left_pane);
-            ***/
+            /*** Tree View *********************************************************************************************
+            scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+            gtk_box_pack_start(GTK_BOX(sp), scrolled_window, TRUE, TRUE, 0);
+            
+            
+            if(tree_view)
+                gtk_widget_destroy(tree_view);
 
-            /***
-            enum _Fm.FolderViewMode
+             create a dir tree 
+            tree_view = fm_dir_tree_view_new();
+            
+            if(global_dir_tree_model)
+                g_object_ref(global_dir_tree_model);
+            else
             {
-                FM_FV_ICON_VIEW,
-                FM_FV_COMPACT_VIEW,
-                FM_FV_THUMBNAIL_VIEW,
-                FM_FV_LIST_VIEW
-            };***/
+                FmFileInfoJob* job = fm_file_info_job_new(NULL, FM_FILE_INFO_JOB_NONE);
+                GList* l;
+                 query FmFileInfo for home dir and root dir, and then,
+                 * add them to dir tree model 
+                fm_file_info_job_add(job, fm_path_get_home());
+                fm_file_info_job_add(job, fm_path_get_root());
 
+                 FIXME: maybe it's cleaner to use run_async here? 
+                fm_job_run_sync_with_mainloop(FM_JOB(job));
+
+                global_dir_tree_model = fm_dir_tree_model_new();
+                for(l = fm_list_peek_head_link(job->file_infos); l; l = l->next)
+                {
+                    FmFileInfo* fi = FM_FILE_INFO(l->data);
+                    fm_dir_tree_model_add_root(global_dir_tree_model, fi, NULL);
+                }
+                g_object_unref(job);
+
+                g_object_add_weak_pointer(global_dir_tree_model, &global_dir_tree_model);
+            }
+            
+            gtk_tree_view_set_model(FM_DIR_TREE_VIEW(tree_view), global_dir_tree_model);
+            g_object_unref(global_dir_tree_model);
+            
+            fm_dir_tree_view_chdir(FM_DIR_TREE_VIEW(tree_view), sp->cwd);
+
+            gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
+                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+
+            g_signal_connect(tree_view, "chdir", G_CALLBACK(on_dirtree_chdir), sp);
+
+            gtk_widget_show(tree_view);
+            gtk_container_add(GTK_CONTAINER(scrolled_window), tree_view);
+            
+            gtk_paned_add1 (GTK_PANED (this.hpaned), this.left_pane);
+            gtk_widget_show_all(GTK_WIDGET(sp));
+        
+            ***********************************************************************************************************/
             
             // Create The Folder View...
             /*** _folder_view = new Fm.FolderView (Fm.FolderMode.LIST_VIEW); ***/

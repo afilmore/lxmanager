@@ -16,6 +16,149 @@
  * 
  * 
  **********************************************************************************************************************/
+
+
+/***********************************************************************************************************************
+
+    Not A source File, Just Studying LibFM's SidePane Widget :)
+
+
+***********************************************************************************************************************/
+struct _FmSidePane
+{
+    GtkVBox parent;
+    FmPath* cwd;
+    GtkWidget* scroll;
+    GtkWidget* view;
+};
+
+FmPath* fm_side_pane_get_cwd(FmSidePane* sp);
+void fm_side_pane_chdir(FmSidePane* sp, FmPath* path);
+
+/**********************************************************************************************************************/
+enum
+{
+    CHDIR,
+    MODE_CHANGED,
+    N_SIGNALS
+};
+static guint signals[N_SIGNALS];
+static FmDirTreeModel* global_dir_tree_model = NULL;
+
+static void fm_side_pane_init(FmSidePane *sp)
+{
+    //~ GtkActionGroup* act_grp = gtk_action_group_new("SidePane");
+    //~ GtkWidget* hbox;
+//~ 
+    //~ gtk_action_group_set_translation_domain(act_grp, GETTEXT_PACKAGE);
+    //~ sp->title_bar = gtk_hbox_new(FALSE, 0);
+    //~ sp->menu_label = gtk_label_new("");
+    //~ gtk_misc_set_alignment(GTK_MISC(sp->menu_label), 0.0, 0.5);
+    //~ sp->menu_btn = gtk_button_new();
+    //~ hbox = gtk_hbox_new(FALSE, 0);
+    //~ gtk_box_pack_start(GTK_BOX(hbox), sp->menu_label, TRUE, TRUE, 0);
+    //~ gtk_box_pack_start(GTK_BOX(hbox), gtk_arrow_new(GTK_ARROW_DOWN, GTK_SHADOW_NONE),
+                       //~ FALSE, TRUE, 0);
+    //~ gtk_container_add(GTK_CONTAINER(sp->menu_btn), hbox);
+    //~ // gtk_widget_set_tooltip_text(sp->menu_btn, _(""));
+
+    //~ g_signal_connect(sp->menu_btn, "clicked", G_CALLBACK(on_menu_btn_clicked), sp);
+    //~ gtk_button_set_relief(GTK_BUTTON(sp->menu_btn), GTK_RELIEF_NONE);
+    //~ gtk_box_pack_start(GTK_BOX(sp->title_bar), sp->menu_btn, TRUE, TRUE, 0);
+
+    /* the drop down menu */
+    //~ sp->ui = gtk_ui_manager_new();
+    //~ gtk_ui_manager_add_ui_from_string(sp->ui, menu_xml, -1, NULL);
+    //~ gtk_action_group_add_radio_actions(act_grp, menu_actions, G_N_ELEMENTS(menu_actions),
+                                       //~ -1, G_CALLBACK(on_mode_changed), sp);
+    //~ gtk_ui_manager_insert_action_group(sp->ui, act_grp, -1);
+    //~ g_object_unref(act_grp);
+    //~ sp->menu = gtk_ui_manager_get_widget(sp->ui, "/popup");
+
+
+
+
+
+FmPath* fm_side_pane_get_cwd(FmSidePane* sp)
+{
+    return sp->cwd;
+}
+
+void fm_side_pane_chdir(FmSidePane* sp, FmPath* path)
+{
+    if(sp->cwd)
+        fm_path_unref(sp->cwd);
+    sp->cwd = fm_path_ref(path);
+
+    fm_dir_tree_view_chdir(FM_DIR_TREE_VIEW(tree_view), path);
+}
+
+static void on_dirtree_chdir(FmDirTreeView* view, guint button, FmPath* path, FmSidePane* sp)
+{
+//    g_signal_handlers_block_by_func(win->places_view, on_places_chdir, win);
+//    fm_main_win_chdir(win, path);
+//    g_signal_handlers_unblock_by_func(win->places_view, on_places_chdir, win);
+    if(sp->cwd)
+        fm_path_unref(sp->cwd);
+    sp->cwd = fm_path_ref(path);
+    g_signal_emit(sp, signals[CHDIR], 0, button, path);
+}
+
+
+/**********************************************************************************************************************/
+
+/* Adopted from gtk/gtkmenutoolbutton.c
+ * Copyright (C) 2003 Ricardo Fernandez Pascual
+ * Copyright (C) 2004 Paolo Borelli
+ */
+static void menu_position_func(GtkMenu *menu, int *x, int *y, gboolean *push_in, GtkButton *button)
+{
+    GtkWidget *widget = GTK_WIDGET(button);
+    GtkRequisition req;
+    GtkRequisition menu_req;
+    GtkTextDirection direction;
+    GdkRectangle monitor;
+    gint monitor_num;
+    GdkScreen *screen;
+
+    gtk_widget_size_request (GTK_WIDGET (menu), &menu_req);
+    direction = gtk_widget_get_direction (widget);
+
+    /* make the menu as wide as the button when needed */
+    if(menu_req.width < GTK_WIDGET(button)->allocation.width)
+    {
+        menu_req.width = GTK_WIDGET(button)->allocation.width;
+        gtk_widget_set_size_request(GTK_WIDGET(menu), menu_req.width, -1);
+    }
+
+    screen = gtk_widget_get_screen (GTK_WIDGET (menu));
+    monitor_num = gdk_screen_get_monitor_at_window (screen, widget->window);
+    if (monitor_num < 0)
+        monitor_num = 0;
+    gdk_screen_get_monitor_geometry (screen, monitor_num, &monitor);
+
+    gdk_window_get_origin (widget->window, x, y);
+    *x += widget->allocation.x;
+    *y += widget->allocation.y;
+/*
+    if (direction == GTK_TEXT_DIR_LTR)
+        *x += MAX (widget->allocation.width - menu_req.width, 0);
+    else if (menu_req.width > widget->allocation.width)
+        *x -= menu_req.width - widget->allocation.width;
+*/
+    if ((*y + widget->allocation.height + menu_req.height) <= monitor.y + monitor.height)
+        *y += widget->allocation.height;
+    else if ((*y - menu_req.height) >= monitor.y)
+        *y -= menu_req.height;
+    else if (monitor.y + monitor.height - (*y + widget->allocation.height) > *y)
+        *y += widget->allocation.height;
+    else
+        *y -= menu_req.height;
+    *push_in = FALSE;
+}
+/**********************************************************************************************************************/
+
+
 int main(int argc, char** argv)
 {
 	GtkWidget* w;
@@ -43,6 +186,7 @@ int main(int argc, char** argv)
 
 	return 0;
 }
+
 /* ********************************************************************************************************************/
 private void on_bookmark (GtkMenuItem* mi) {
 
