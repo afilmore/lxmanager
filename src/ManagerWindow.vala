@@ -179,22 +179,22 @@ namespace Manager {
             {"ShowHidden", null, N_("Show _Hidden"), "<Ctrl>H", null,                       _on_show_hidden, false}
         };*/
 
-/*        private const Gtk.RadioActionEntry _main_win_mode_actions[] = {
-            {"IconView", null, N_("_Icon View"), null, null,                                FM_FV_ICON_VIEW},
-            {"CompactView", null, N_("_Compact View"), null, null,                          FM_FV_COMPACT_VIEW},
-            {"ThumbnailView", null, N_("Thumbnail View"), null, null,                       FM_FV_THUMBNAIL_VIEW},
-            {"ListView", null, N_("Detailed _List View"), null, null,                       FM_FV_LIST_VIEW}
-        };*/
+        private const Gtk.RadioActionEntry _main_win_mode_actions[] = {
+            {"IconView", null, N_("_Icon View"), null, null,                                Fm.FolderViewMode.ICON_VIEW},
+            {"CompactView", null, N_("_Compact View"), null, null,                          Fm.FolderViewMode.COMPACT_VIEW},
+            {"ThumbnailView", null, N_("Thumbnail View"), null, null,                       Fm.FolderViewMode.THUMBNAIL_VIEW},
+            {"ListView", null, N_("Detailed _List View"), null, null,                       Fm.FolderViewMode.LIST_VIEW}
+        };
 
         private const Gtk.RadioActionEntry _main_win_sort_type_actions[] = {
             {"Asc", Gtk.Stock.SORT_ASCENDING, null, null, null,                             Gtk.SortType.ASCENDING},
             {"Desc", Gtk.Stock.SORT_DESCENDING, null, null, null,                           Gtk.SortType.DESCENDING}
         };
 
-/*        private const Gtk.RadioActionEntry _main_win_sort_by_actions[] = {
-            {"ByName", null, N_("By _Name"), null, null,                                    COL_FILE_NAME},
-            {"ByMTime", null, N_("By _Modification Time"), null, null,                      COL_FILE_MTIME}
-        };*/
+        private const Gtk.RadioActionEntry _main_win_sort_by_actions[] = {
+            {"ByName", null, N_("By _Name"), null, null,                                    Fm.FileColumn.NAME},
+            {"ByMTime", null, N_("By _Modification Time"), null, null,                      Fm.FileColumn.MTIME}
+        };
 
         /*** Action entries for popup menus ***/
         private const Gtk.ActionEntry _folder_menu_actions[] = {
@@ -206,7 +206,7 @@ namespace Manager {
         private Gtk.UIManager   _ui;
         
         private Gtk.HPaned      _hpaned;
-//~         private Fm.FolderView   _folder_view;
+        private Fm.FolderView   _folder_view;
         private Gtk.Toolbar     _toolbar;
         private Gtk.Statusbar   _statusbar;
         private Gtk.Menu        _popup;
@@ -266,17 +266,17 @@ namespace Manager {
             
             // Create The Folder View...
             /*** _folder_view = new Fm.FolderView (Fm.FolderMode.LIST_VIEW); ***/
-//~             _folder_view = new Fm.FolderView (3);
-//~             
-//~             _folder_view.set_show_hidden (false);
-//~             _folder_view.sort (Gtk.SortType.ASCENDING, Fm.FileColumn.NAME);
-//~             _folder_view.set_selection_mode (Gtk.SelectionMode.MULTIPLE);
-//~             
-//~             _folder_view.clicked.connect        (_on_file_clicked, this);
-//~             _folder_view.loaded.connect         (_on_view_loaded, this);
-//~             _folder_view.sel_changed.connect    (_on_sel_changed, this);
-//~ 
-//~             _hpaned.add2 (_folder_view);
+            _folder_view = new Fm.FolderView (3);
+            
+            _folder_view.set_show_hidden (false);
+            _folder_view.sort (Gtk.SortType.ASCENDING, Fm.FileColumn.NAME);
+            _folder_view.set_selection_mode (Gtk.SelectionMode.MULTIPLE);
+            
+            _folder_view.clicked.connect        (_on_file_clicked);
+            _folder_view.loaded.connect         (_on_view_loaded);
+            _folder_view.sel_changed.connect    (_on_sel_changed);
+
+            _hpaned.add2 (_folder_view);
 
             /*** link places view with folder view. 
             g_signal_connect (_left_pane, "chdir", G_CALLBACK (_on_side_pane_chdir), win);***/
@@ -284,7 +284,7 @@ namespace Manager {
             // Create menu bar and toolbar 
             Gtk.UIManager ui = new Gtk.UIManager ();
             Gtk.ActionGroup action_group = new Gtk.ActionGroup ("Main");
-//~             action_group.add_actions (_main_win_actions, this);
+            action_group.add_actions (_main_win_actions, this);
 //~             action_group.add_toggle_actions (_main_win_toggle_actions);
 //~             action_group.add_radio_actions  (_main_win_mode_actions, Fm.FolderMode.ICON_VIEW, _on_change_mode);
 //~             action_group.add_radio_actions  (_main_win_sort_type_actions, Gtk.SortType.ASCENDING, _on_sort_type);
@@ -342,12 +342,12 @@ namespace Manager {
             _statusbar = new Gtk.Statusbar ();
             
             // Status bar column showing volume free space 
-            Gtk.ShadowType? shadow_type = null;
-            _statusbar.style_get ("shadow-type", out shadow_type, null);
-            _vol_status = new Gtk.Frame (null);
-            _vol_status.set_shadow_type (shadow_type);
-            _statusbar.pack_start (_vol_status, false, true, 0);
-            _vol_status.add (new Gtk.Label (null));
+//~             Gtk.ShadowType? shadow_type = null;
+//~             _statusbar.style_get ("shadow-type", out shadow_type, null);
+//~             _vol_status = new Gtk.Frame (null);
+//~             _vol_status.set_shadow_type (shadow_type);
+//~             _statusbar.pack_start (_vol_status, false, true, 0);
+//~             _vol_status.add (new Gtk.Label (null));
 
             vbox.pack_start (_statusbar, false, true, 0);
             
@@ -359,11 +359,11 @@ namespace Manager {
             this.add (vbox);
             vbox.show_all ();
 
-//~             _folder_view.set_show_hidden (false);
+            _folder_view.set_show_hidden (false);
             
             this.chdir (Fm.Path.get_home ());
 
-//~             _folder_view.grab_focus ();
+            _folder_view.grab_focus ();
         }
         
         ~Window () {
@@ -428,6 +428,44 @@ namespace Manager {
         }
         
 
+        private void chdir_without_history (Fm.Path path) {
+
+//~             if (win->folder)
+//~             {
+//~                 g_signal_handlers_disconnect_by_func (win->folder, _on_folder_fs_info, win);
+//~                 g_object_unref (win->folder);
+//~             }
+
+            _folder_view.chdir (path);
+            //fm_side_pane_chdir (FM_SIDE_PANE (win->left_pane), path);
+
+//~             win->folder = fm_folder_view_get_folder (fv);
+//~             g_object_ref (win->folder);
+//~             g_signal_connect (win->folder, "fs-info", G_CALLBACK (_on_folder_fs_info), win);
+
+            update_statusbar ();
+            // commented in original code fm_nav_history_set_cur (); 
+        }
+
+        private void chdir (Fm.Path path) {
+
+//~             int scroll_pos = gtk_adjustment_get_value (gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (win->folder_view)));
+//~             fm_nav_history_chdir (win->nav_history, path, scroll_pos);
+            chdir_without_history (path);
+        }
+        
+
+        private void chdir_by_name (string path_str) {
+
+//~             Fm.Path path;
+//~             string tmp;
+//~             path = fm_path_new_for_str (path_str);
+//~             chdir_without_history (win, path);
+//~             tmp = fm_path_display_name (path, FALSE);
+//~             gtk_entry_set_text (GTK_ENTRY (win->location), tmp);
+//~             g_free (tmp);
+//~             fm_path_unref (path);
+        }
         private void _on_entry_activate (Gtk.Entry entry) {
 
 //~             Fm.Path path = fm_path_entry_get_path (FM_PATH_ENTRY (entry));
@@ -454,7 +492,7 @@ namespace Manager {
 //~             }
         }
 
-//~         private void _on_view_loaded (Fm.FolderView view, Fm.Path path, void * user_data) {
+        private void _on_view_loaded (Fm.Path path) {
 
 //~             const FmNavHistoryItem item;
 //~              =  (FmMainWin)user_data;
@@ -468,7 +506,7 @@ namespace Manager {
 //~ 
 //~             // update status bar 
 //~             update_statusbar (win);
-//~         }
+        }
 
         private bool open_folder_func (AppLaunchContext ctx, List folder_infos, void * user_data, Error err) {
 
@@ -485,7 +523,7 @@ namespace Manager {
             return true;
         }
 
-//~         private void _on_file_clicked (Fm.FolderView fv, Fm.FolderViewClickType type, Fm.FileInfo fi) {
+        private void _on_file_clicked (Fm.FolderViewClickType type, Fm.FileInfo fi) {
 
 //~             string fpath, uri;
 //~             GAppLaunchContext ctx;
@@ -537,9 +575,9 @@ namespace Manager {
 //~                 g_debug ("middle click!");
 //~                 break;
 //~             }
-//~         }
+        }
 
-//~         private void _on_sel_changed (Fm.FolderView fv, Fm.FileInfoList files) {
+        private void _on_sel_changed (Fm.FileInfoList files) {
 
 //~             // popup previous message if there is any 
 //~             gtk_statusbar_pop (GTK_STATUSBAR (win->statusbar), win->statusbar_ctx2);
@@ -577,19 +615,8 @@ namespace Manager {
                     // commented in original code g_signal_handlers_block_by_func (win->dirtree_view, _on_dirtree_chdir, win);
 //~             chdir (win, path);
                     // commented in original code g_signal_handlers_unblock_by_func (win->dirtree_view, _on_dirtree_chdir, win);
-//~         }
-
-        private void chdir_by_name (string path_str) {
-
-//~             Fm.Path path;
-//~             string tmp;
-//~             path = fm_path_new_for_str (path_str);
-//~             chdir_without_history (win, path);
-//~             tmp = fm_path_display_name (path, FALSE);
-//~             gtk_entry_set_text (GTK_ENTRY (win->location), tmp);
-//~             g_free (tmp);
-//~             fm_path_unref (path);
         }
+
 
         private void _on_folder_fs_info (Fm.Folder folder) {
 
@@ -612,34 +639,6 @@ namespace Manager {
 //~                 gtk_widget_hide (win->vol_status);
 //~             }
         }
-
-        private void chdir_without_history (Fm.Path path) {
-
-//~             Fm.FolderView fv = FM_FOLDER_VIEW (win->folder_view);
-//~             if (win->folder)
-//~             {
-//~                 g_signal_handlers_disconnect_by_func (win->folder, _on_folder_fs_info, win);
-//~                 g_object_unref (win->folder);
-//~             }
-//~ 
-//~             fm_folder_view_chdir (fv, path);
-//~             fm_side_pane_chdir (FM_SIDE_PANE (win->left_pane), path);
-//~ 
-//~             win->folder = fm_folder_view_get_folder (fv);
-//~             g_object_ref (win->folder);
-//~             g_signal_connect (win->folder, "fs-info", G_CALLBACK (_on_folder_fs_info), win);
-//~ 
-//~             update_statusbar (win);
-            // commented in original code fm_nav_history_set_cur (); 
-        }
-
-        private void chdir (Fm.Path path) {
-
-//~             int scroll_pos = gtk_adjustment_get_value (gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (win->folder_view)));
-//~             fm_nav_history_chdir (win->nav_history, path, scroll_pos);
-//~             chdir_without_history (win, path);
-        }
-        
 
 
 

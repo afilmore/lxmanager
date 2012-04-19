@@ -52,6 +52,7 @@ lxmanager_VALAFLAGS = \
 	--pkg vconfig \
 	--pkg gtk+-2.0 \
 	--pkg libfmcore \
+	--pkg fm-gtk \
 	$(NULL)
 
 lxmanager_CFLAGS = \

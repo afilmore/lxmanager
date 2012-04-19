@@ -269,7 +269,7 @@ static void fm_folder_view_init(FmFolderView *self)
     gtk_scrolled_window_set_policy((GtkScrolledWindow*)self, GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
     /* config change notifications */
-    g_signal_connect(fm_config, "changed::single_click", G_CALLBACK(on_single_click_changed), self);
+//    g_signal_connect(fm_config, "changed::single_click", G_CALLBACK(on_single_click_changed), self);
 
     /* dnd support */
     self->dnd_src = fm_dnd_src_new(NULL);
@@ -494,7 +494,7 @@ static inline void create_icon_view(FmFolderView* fv, GList* sels)
 
     if(fv->mode == FM_FV_COMPACT_VIEW) /* compact view */
     {
-        fv->icon_size_changed_handler = g_signal_connect(fm_config, "changed::small_icon_size", G_CALLBACK(on_small_icon_size_changed), fv);
+//        fv->icon_size_changed_handler = g_signal_connect(fm_config, "changed::small_icon_size", G_CALLBACK(on_small_icon_size_changed), fv);
         icon_size = fm_config->small_icon_size;
         fm_cell_renderer_pixbuf_set_fixed_size(FM_CELL_RENDERER_PIXBUF(fv->renderer_pixbuf), icon_size, icon_size);
         if(model)
@@ -579,7 +579,7 @@ static inline void create_list_view(FmFolderView* fv, GList* sels)
 
     render = fm_cell_renderer_pixbuf_new();
     fv->renderer_pixbuf = render;
-    fv->icon_size_changed_handler = g_signal_connect(fm_config, "changed::small_icon_size", G_CALLBACK(on_small_icon_size_changed), fv);
+//    fv->icon_size_changed_handler = g_signal_connect(fm_config, "changed::small_icon_size", G_CALLBACK(on_small_icon_size_changed), fv);
     icon_size = fm_config->small_icon_size;
     fm_cell_renderer_pixbuf_set_fixed_size(FM_CELL_RENDERER_PIXBUF(fv->renderer_pixbuf), icon_size, icon_size);
     if(model)
