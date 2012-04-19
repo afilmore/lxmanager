@@ -115,6 +115,8 @@ namespace Manager {
     </popup>
     """;
 
+    private Fm.DirTreeModel? global_dir_tree_model = null;
+    
     public class Window : Gtk.Window {
         
         private bool _debug_mode = false;
@@ -243,64 +245,75 @@ namespace Manager {
             
             global_num_windows++;
 
-            Gtk.VBox vbox = new Gtk.VBox (false, 0);
+            Gtk.VBox main_vbox = new Gtk.VBox (false, 0);
 
             _hpaned = new Gtk.HPaned ();
             _hpaned.set_position (150);
 
-            /*** Tree View *********************************************************************************************
-            scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-            gtk_box_pack_start(GTK_BOX(sp), scrolled_window, TRUE, TRUE, 0);
+            /*** Tree View ********************************************************************************************/
             
+            Gtk.VBox side_pane_vbox = new Gtk.VBox (false, 0);
             
-            if(tree_view)
-                gtk_widget_destroy(tree_view);
-
-             create a dir tree 
-            tree_view = fm_dir_tree_view_new();
+            Gtk.ScrolledWindow scrolled_window = new Gtk.ScrolledWindow (null, null);
             
-            if(global_dir_tree_model)
-                g_object_ref(global_dir_tree_model);
-            else
-            {
-                FmFileInfoJob* job = fm_file_info_job_new(NULL, FM_FILE_INFO_JOB_NONE);
-                GList* l;
-                 query FmFileInfo for home dir and root dir, and then,
-                 * add them to dir tree model 
-                fm_file_info_job_add(job, fm_path_get_home());
-                fm_file_info_job_add(job, fm_path_get_root());
+            side_pane_vbox.pack_start (scrolled_window, true, true, 0);
+            
+            Fm.DirTreeView tree_view = new Fm.DirTreeView();
+            
+            if (global_dir_tree_model == null) {
 
-                 FIXME: maybe it's cleaner to use run_async here? 
-                fm_job_run_sync_with_mainloop(FM_JOB(job));
+                //Fm.FileInfoJob job = new Fm.FileInfoJob (null, FM_FILE_INFO_JOB_NONE);
+                Fm.FileInfoJob job = new Fm.FileInfoJob (null, 0);
+                
+                unowned List<Fm.FileInfo>? l;
+                
+                /**
+                 * query FmFileInfo for home dir and root dir, and then,
+                 * add them to dir tree model **/
+                
+                job.add (Fm.Path.get_home ());
+                job.add (Fm.Path.get_root());
 
-                global_dir_tree_model = fm_dir_tree_model_new();
-                for(l = fm_list_peek_head_link(job->file_infos); l; l = l->next)
-                {
-                    FmFileInfo* fi = FM_FILE_INFO(l->data);
-                    fm_dir_tree_model_add_root(global_dir_tree_model, fi, NULL);
+                /**
+                 * FIXME: maybe it's cleaner to use run_async here ?
+                 * 
+                 **/
+                
+                job.run_sync_with_mainloop ();
+
+                global_dir_tree_model = new Fm.DirTreeModel ();
+                
+                Fm.FileInfoList file_infos = job.file_infos;
+                
+                unowned List<Fm.FileInfo>? list = (List<Fm.FileInfo>) ( (Queue) file_infos).head;
+                
+                for (l = list; l != null; l = l.next) {
+                    
+                    Fm.FileInfo? fi = (Fm.FileInfo) l.data;
+                    
+                    global_dir_tree_model.add_root (fi, null);
                 }
-                g_object_unref(job);
 
-                g_object_add_weak_pointer(global_dir_tree_model, &global_dir_tree_model);
+                //g_object_add_weak_pointer (global_dir_tree_model, &global_dir_tree_model);
             }
             
-            gtk_tree_view_set_model(FM_DIR_TREE_VIEW(tree_view), global_dir_tree_model);
-            g_object_unref(global_dir_tree_model);
+            tree_view.set_model (global_dir_tree_model);
             
-            fm_dir_tree_view_chdir(FM_DIR_TREE_VIEW(tree_view), sp->cwd);
+            //tree_view.chdir (sp->cwd);
 
-            gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
-                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+            scrolled_window.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
 
-            g_signal_connect(tree_view, "chdir", G_CALLBACK(on_dirtree_chdir), sp);
+            //tree_view.chdir.connect (on_dirtree_chdir, sp);
 
-            gtk_widget_show(tree_view);
-            gtk_container_add(GTK_CONTAINER(scrolled_window), tree_view);
+            tree_view.show();
             
-            gtk_paned_add1 (GTK_PANED (this.hpaned), this.left_pane);
-            gtk_widget_show_all(GTK_WIDGET(sp));
+            scrolled_window.add (tree_view);
+            
+            _hpaned.add1 (side_pane_vbox);
+            
+            side_pane_vbox.show_all ();
         
-            ***********************************************************************************************************/
+            /**********************************************************************************************************/
             
             // Create The Folder View...
             /*** _folder_view = new Fm.FolderView (Fm.FolderMode.LIST_VIEW); ***/
@@ -357,8 +370,8 @@ namespace Manager {
             _popup = ui.get_widget ("/popup") as Gtk.Menu;
             _popup.attach_to_widget (this, null);
 
-            vbox.pack_start (menubar, false, true, 0);
-            vbox.pack_start (_toolbar, false, true, 0);
+            main_vbox.pack_start (menubar, false, true, 0);
+            main_vbox.pack_start (_toolbar, false, true, 0);
 
             /*** load bookmarks menu 
             load_bookmarks (win, ui);***/
@@ -374,7 +387,7 @@ namespace Manager {
             gtk_toolbar_insert ( (Gtk.Toolbar)this.toolbar, toolitem, gtk_toolbar_get_n_items (GTK_TOOLBAR (this.toolbar)) - 1 );
             ***/
             
-            vbox.pack_start (_hpaned, true, true, 0);
+            main_vbox.pack_start (_hpaned, true, true, 0);
 
             // Status bar 
             _statusbar = new Gtk.Statusbar ();
@@ -387,15 +400,15 @@ namespace Manager {
 //~             _statusbar.pack_start (_vol_status, false, true, 0);
 //~             _vol_status.add (new Gtk.Label (null));
 
-            vbox.pack_start (_statusbar, false, true, 0);
+            main_vbox.pack_start (_statusbar, false, true, 0);
             
             //this.statusbar_ctx = gtk_statusbar_get_context_id (GTK_STATUSBAR (this.statusbar), "status");
             //this.statusbar_ctx2 = gtk_statusbar_get_context_id (GTK_STATUSBAR (this.statusbar), "status2");
 
             _ui = ui;
 
-            this.add (vbox);
-            vbox.show_all ();
+            this.add (main_vbox);
+            main_vbox.show_all ();
 
             _folder_view.set_show_hidden (false);
             

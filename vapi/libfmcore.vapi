@@ -248,6 +248,46 @@ namespace Fm {
 		public bool is_same_type ();
 	}
 
+	[CCode (cheader_filename = "fm.h")]
+	public class Job : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected Job ();
+		public int ask (string question);
+		public int ask_valist (string question, void* options);
+		public int askv (string question, out unowned string options);
+//		public void* call_main_thread (Fm.JobCallMainThreadFunc func);
+		public virtual void cancel ();
+		public void emit_cancelled ();
+		public int emit_error (GLib.Error err, int severity);
+		public void emit_finished ();
+		public void finish ();
+		public unowned GLib.Cancellable get_cancellable ();
+		public void init_cancellable ();
+		public bool is_cancelled ();
+		public bool is_running ();
+		[NoWrapper]
+		public virtual bool run ();
+		public virtual bool run_async ();
+		public bool run_sync ();
+		public bool run_sync_with_mainloop ();
+		public void set_cancellable (GLib.Cancellable cancellable);
+		public virtual signal int ask2 (void* question, void* options);
+		public virtual signal void cancelled ();
+		public virtual signal int error (void* err, int severity);
+		public virtual signal void finished ();
+	}
+	
+    [CCode (cheader_filename = "fm.h")]
+	public class FileInfoJob : Fm.Job {
+//~ 		public weak Fm.Path current;
+		public weak Fm.FileInfoList file_infos;
+//~ 		public int flags;
+		[CCode (has_construct_function = false, type = "FmJob*")]
+		public FileInfoJob (Fm.PathList files_to_query, int flags);
+		public void add (Fm.Path path);
+		public void add_gfile (GLib.File gf);
+		public unowned Fm.Path get_current ();
+	}
     
     /*******************************************************************************************************************
      * A generic list container supporting reference counting.
@@ -269,8 +309,10 @@ namespace Fm {
 		public bool is_path_list ();
 		public static void remove (void* list, void* data);
 		public static void remove_all (void* list, void* data);
+        [CCode (cprefix = "fm_", cheader_filename = "fm-list.h")]
+        public inline unowned GLib.List? peek_head_link ();
 	}
-	
+
     [CCode (cheader_filename = "fm-list.h")]
 	[Compact]
 	public class ListFuncs {
