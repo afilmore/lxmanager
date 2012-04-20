@@ -207,11 +207,11 @@ namespace Manager {
 
         private Gtk.UIManager   _ui;
         
+        private Gtk.Toolbar     _toolbar;
+        private Gtk.Menu        _popup;
         private Gtk.HPaned      _hpaned;
         private Fm.FolderView   _folder_view;
-        private Gtk.Toolbar     _toolbar;
         private Gtk.Statusbar   _statusbar;
-        private Gtk.Menu        _popup;
         private Gtk.Frame       _vol_status;
         
         /***
@@ -271,9 +271,13 @@ namespace Manager {
                  * query FmFileInfo for home dir and root dir, and then,
                  * add them to dir tree model **/
                 
-                job.add (Fm.Path.get_home ());
-                job.add (Fm.Path.get_root());
-
+                //Fm.Path desktop = new Fm.path.for_str ("");
+                job.add (Fm.Path.get_desktop ());
+                //job.add (Fm.Path.get_home ());
+                job.add (Fm.Path.get_trash ());
+                job.add (Fm.Path.get_root ());
+                //job.add (Fm.Path.get_apps_menu ());
+                
                 /**
                  * FIXME: maybe it's cleaner to use run_async here ?
                  * 
