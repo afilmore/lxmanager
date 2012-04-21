@@ -17,102 +17,79 @@
 namespace Manager {
     
     private const string global_main_menu_xml = """
-    <menubar>
-      <menu action='FileMenu'>
-        <menuitem action='New'/>
-        <menuitem action='Close'/>
-      </menu>
-      <menu action='EditMenu'>
-        <menuitem action='Cut'/>
-        <menuitem action='Copy'/>
-        <menuitem action='Paste'/>
-        <menuitem action='Del'/>
-        <separator/>
-        <menuitem action='Rename'/>
-        <menuitem action='Link'/>
-        <menuitem action='MoveTo'/>
-        <menuitem action='CopyTo'/>
-        <separator/>
-        <menuitem action='SelAll'/>
-        <menuitem action='InvSel'/>
-        <separator/>
-        <menuitem action='Pref'/>
-      </menu>
-      <menu action='GoMenu'>
-        <menuitem action='Prev'/>
-        <menuitem action='Next'/>
-        <menuitem action='Up'/>
-        <separator/>
-        <menuitem action='Home'/>
-        <menuitem action='Desktop'/>
-        <menuitem action='Computer'/>
-        <menuitem action='Trash'/>
-        <menuitem action='Network'/>
-        <menuitem action='Apps'/>
-      </menu>
-      <menu action='BookmarksMenu'>
-        <menuitem action='AddBookmark'/>
-      </menu>
-      <menu action='ViewMenu'>
-        <menuitem action='ShowHidden'/>
-        <separator/>
-        <menuitem action='IconView'/>
-        <menuitem action='CompactView'/>
-        <menuitem action='ThumbnailView'/>
-        <menuitem action='ListView'/>
-        <separator/>
-        <menu action='Sort'>
-          <menuitem action='Desc'/>
-          <menuitem action='Asc'/>
-          <separator/>
-          <menuitem action='ByName'/>
-          <menuitem action='ByMTime'/>
-        </menu>
-      </menu>
-      <menu action='HelpMenu'>
-        <menuitem action='About'/>
-      </menu>
-    </menubar>
-    
-    <toolbar>
-        <toolitem action='New'/>
-        <toolitem action='Prev'/>
-        <toolitem action='Up'/>
-        <toolitem action='Home'/>
-        <toolitem action='Go'/>
-    </toolbar>
-    
-    <popup>
-      <menu action='CreateNew'>
-        <menuitem action='NewFolder'/>
-        <menuitem action='NewBlank'/>
-      </menu>
-      <separator/>
-      <menuitem action='Paste'/>
-      <menu action='Sort'>
-        <menuitem action='Desc'/>
-        <menuitem action='Asc'/>
-        <separator/>
-        <menuitem action='ByName'/>
-        <menuitem action='ByMTime'/>
-      </menu>
-      <menuitem action='ShowHidden'/>
-      <separator/>
-      <menuitem action='Prop'/>
-    </popup>
-    
-    <accelerator action='Location'/>
-    <accelerator action='Location2'/>
+        <menubar>
+          
+          <menu action='FileMenu'>
+            <menuitem action='New'/>
+            <menuitem action='Close'/>
+          </menu>
+          
+          <menu action='EditMenu'>
+            <menuitem action='Cut'/>
+            <menuitem action='Copy'/>
+            <menuitem action='Paste'/>
+            <menuitem action='Del'/>
+            <separator/>
+            <menuitem action='Rename'/>
+            <menuitem action='Link'/>
+            <menuitem action='MoveTo'/>
+            <menuitem action='CopyTo'/>
+            <separator/>
+            <menuitem action='SelAll'/>
+            <menuitem action='InvSel'/>
+            <separator/>
+            <menuitem action='Pref'/>
+          </menu>
+          
+          <menu action='GoMenu'>
+            <menuitem action='Prev'/>
+            <menuitem action='Next'/>
+            <menuitem action='Up'/>
+            <separator/>
+            <menuitem action='Home'/>
+            <menuitem action='Desktop'/>
+            <menuitem action='Computer'/>
+            <menuitem action='Trash'/>
+            <menuitem action='Network'/>
+            <menuitem action='Apps'/>
+          </menu>
+          
+          <menu action='BookmarksMenu'>
+            <menuitem action='AddBookmark'/>
+          </menu>
+          
+          <menu action='HelpMenu'>
+            <menuitem action='About'/>
+          </menu>
+          
+        </menubar>
+        
+        <toolbar>
+            <toolitem action='New'/>
+            <toolitem action='Prev'/>
+            <toolitem action='Next'/>
+            <toolitem action='Up'/>
+            <toolitem action='Home'/>
+            <toolitem action='Go'/>
+        </toolbar>
+        
+        
+        <accelerator action='Location'/>
+        <accelerator action='Location2'/>
     """;
     
     private const string global_folder_menu_xml = """
-    <popup>
-      <placeholder name='ph1'>
-        /* <menuitem action='NewTab'/> */
-        <menuitem action='NewWin'/>
-        /* <menuitem action='Search'/> */
-      </placeholder>
-    </popup>
+        <popup>
+        
+          <placeholder name='ph1'>
+            
+            /* <menuitem action='NewTab'/> */
+            <menuitem action='NewWin'/>
+            /* <menuitem action='Search'/> */
+            
+          </placeholder>
+        
+        </popup>
     """;
 
     private Fm.DirTreeModel? global_dir_tree_model = null;
@@ -124,37 +101,39 @@ namespace Manager {
         private const Gtk.ActionEntry _main_win_actions[] = {
             
             {"FileMenu", null, N_("_File"), null, null, null},
-                {"New", Gtk.Stock.NEW, N_("_New Window"), "<Ctrl>N", null,                  _on_new_win},
-                {"Close", Gtk.Stock.CLOSE, N_("_Close Window"), "<Ctrl>W", null,            _on_close_win},
+                {"New", Gtk.Stock.NEW, N_("_New Window"), "<Ctrl>N", null,          _on_new_win},
+                {"Close", Gtk.Stock.CLOSE, N_("_Close Window"), "<Ctrl>W", null,    _on_close_win},
             
             {"EditMenu", null, N_("_Edit"), null, null, null},
-                {"Cut", Gtk.Stock.CUT, null, null, null,                                    _on_cut},
-                {"Copy", Gtk.Stock.COPY, null, null, null,                                  _on_copy},
-                {"Paste", Gtk.Stock.PASTE, null, null, null,                                _on_paste},
-                {"Del", Gtk.Stock.DELETE, null, null, null,                                 _on_del},
-                {"Rename", null, N_("Rename"), "F2", null,                                  _on_rename},
+                {"Cut", Gtk.Stock.CUT, null, null, null,                            _on_cut},
+                {"Copy", Gtk.Stock.COPY, null, null, null,                          _on_copy},
+                {"Paste", Gtk.Stock.PASTE, null, null, null,                        _on_paste},
+                {"Del", Gtk.Stock.DELETE, null, null, null,                         _on_del},
+                {"Rename", null, N_("Rename"), "F2", null,                          _on_rename},
                 {"Link", null, N_("Create Symlink"), null, null, null},
-                {"MoveTo", null, N_("Move To..."), null, null,                              _on_move_to},
-                {"CopyTo", null, N_("Copy To..."), null, null,                              _on_copy_to},
-                {"SelAll", Gtk.Stock.SELECT_ALL, null, null, null,                          _on_select_all},
-                {"InvSel", null, N_("Invert Selection"), null, null,                        _on_invert_select},
+                {"MoveTo", null, N_("Move To..."), null, null,                      _on_move_to},
+                {"CopyTo", null, N_("Copy To..."), null, null,                      _on_copy_to},
+                {"SelAll", Gtk.Stock.SELECT_ALL, null, null, null,                  _on_select_all},
+                {"InvSel", null, N_("Invert Selection"), null, null,                _on_invert_select},
                 {"Pref", Gtk.Stock.PREFERENCES, null, null, null, null},
             
             {"GoMenu", null, N_("_Go"), null, null, null},
-/*                {"Prev", Gtk.Stock.GO_BACK, N_("Previous Folder"), "<Alt>Left",
-                                            N_("Previous Folder"),                          _on_go_back},
+                {"Prev", Gtk.Stock.GO_BACK, N_("Previous Folder"), "<Alt>Left",
+                                            N_("Previous Folder"),                  _on_go_back},
                 {"Next", Gtk.Stock.GO_FORWARD, N_("Next Folder"), "<Alt>Right",
-                                            N_("Next Folder"),                              _on_go_forward},*/
+                                            N_("Next Folder"),                      _on_go_forward},
                 {"Up", Gtk.Stock.GO_UP, N_("Parent Folder"), "<Alt>Up", 
-                                        N_("Go to parent Folder"),                          _on_go_up},
-                {"Home", "user-home", N_("Home Folder"), "<Alt>Home", N_("Home Folder"),    _on_go_home},
-                {"Desktop", "user-desktop", N_("Desktop"), null, N_("Desktop Folder"),      _on_go_desktop},
-                {"Computer", "computer", N_("My Computer"), null, null,                     _on_go_computer},
-                {"Trash", "user-trash", N_("Trash Can"), null, null,                        _on_go_trash},
-                {"Network", Gtk.Stock.NETWORK, N_("Network Drives"), null, null,            _on_go_network},
+                                        N_("Go to parent Folder"),                  _on_go_up},
+                {"Home", "user-home", N_("Home Folder"), "<Alt>Home",
+                                      N_("Home Folder"),                            _on_go_home},
+                {"Desktop", "user-desktop", N_("Desktop"), null,
+                                            N_("Desktop Folder"),                   _on_go_desktop},
+                {"Computer", "computer", N_("My Computer"), null, null,             _on_go_computer},
+                {"Trash", "user-trash", N_("Trash Can"), null, null,                _on_go_trash},
+                {"Network", Gtk.Stock.NETWORK, N_("Network Drives"), null, null,    _on_go_network},
                 {"Apps", "system-software-install", N_("Applications"), null, 
-                                                    N_("Installed Applications"),           _on_go_apps},
-                {"Go", Gtk.Stock.JUMP_TO, null, null, null,                                 _on_go},
+                                                    N_("Installed Applications"),   _on_go_apps},
+                {"Go", Gtk.Stock.JUMP_TO, null, null, null,                         _on_go},
             
             {"BookmarksMenu", null, N_("_Bookmarks"), null, null, null},
                 {"AddBookmark", Gtk.Stock.ADD, N_("Add To Bookmarks"), null, 
@@ -164,51 +143,51 @@ namespace Manager {
                 {"Sort", null, N_("_Sort Files"), null, null, null},
             
             {"HelpMenu", null, N_("_Help"), null, null, null},
-                {"About", Gtk.Stock.ABOUT, null, null, null,                                _on_about},
+                {"About", Gtk.Stock.ABOUT, null, null, null,                        _on_about},
             
             /*** For accelerators ***/
-            {"Location", null, null, "<Alt>d", null,                                        _on_location},
-            {"Location2", null, null, "<Ctrl>L", null,                                      _on_location},
+            {"Location", null, null, "<Alt>d", null,                                _on_location},
+            {"Location2", null, null, "<Ctrl>L", null,                              _on_location},
             
             /*** For The Popup Menu ***/
             {"CreateNew", Gtk.Stock.NEW, null, null, null, null},
-/*            {"NewFolder", "folder", N_("Folder"), null, null,                               _on_create_new},
-            {"NewBlank", "text-x-generic", N_("Blank FIle"), null, null,                    _on_create_new},*/
-            {"Prop", Gtk.Stock.PROPERTIES, null, null, null,                                _on_prop}
+/*            {"NewFolder", "folder", N_("Folder"), null, null,                     _on_create_new},
+            {"NewBlank", "text-x-generic", N_("Blank FIle"), null, null,            _on_create_new},*/
+            {"Prop", Gtk.Stock.PROPERTIES, null, null, null,                        _on_prop}
         };
 
 /*        private const Gtk.ToggleActionEntry _main_win_toggle_actions[] = {
-            {"ShowHidden", null, N_("Show _Hidden"), "<Ctrl>H", null,                       _on_show_hidden, false}
+            {"ShowHidden", null, N_("Show _Hidden"), "<Ctrl>H", null,               _on_show_hidden, false}
         };*/
 
         private const Gtk.RadioActionEntry _main_win_mode_actions[] = {
-            {"IconView", null, N_("_Icon View"), null, null,                                Fm.FolderViewMode.ICON_VIEW},
-            {"CompactView", null, N_("_Compact View"), null, null,                          Fm.FolderViewMode.COMPACT_VIEW},
-            {"ThumbnailView", null, N_("Thumbnail View"), null, null,                       Fm.FolderViewMode.THUMBNAIL_VIEW},
-            {"ListView", null, N_("Detailed _List View"), null, null,                       Fm.FolderViewMode.LIST_VIEW}
+            {"IconView", null, N_("_Icon View"), null, null,                        Fm.FolderViewMode.ICON_VIEW},
+            {"CompactView", null, N_("_Compact View"), null, null,                  Fm.FolderViewMode.COMPACT_VIEW},
+            {"ThumbnailView", null, N_("Thumbnail View"), null, null,               Fm.FolderViewMode.THUMBNAIL_VIEW},
+            {"ListView", null, N_("Detailed _List View"), null, null,               Fm.FolderViewMode.LIST_VIEW}
         };
 
         private const Gtk.RadioActionEntry _main_win_sort_type_actions[] = {
-            {"Asc", Gtk.Stock.SORT_ASCENDING, null, null, null,                             Gtk.SortType.ASCENDING},
-            {"Desc", Gtk.Stock.SORT_DESCENDING, null, null, null,                           Gtk.SortType.DESCENDING}
+            {"Asc", Gtk.Stock.SORT_ASCENDING, null, null, null,                     Gtk.SortType.ASCENDING},
+            {"Desc", Gtk.Stock.SORT_DESCENDING, null, null, null,                   Gtk.SortType.DESCENDING}
         };
 
         private const Gtk.RadioActionEntry _main_win_sort_by_actions[] = {
-            {"ByName", null, N_("By _Name"), null, null,                                    Fm.FileColumn.NAME},
-            {"ByMTime", null, N_("By _Modification Time"), null, null,                      Fm.FileColumn.MTIME}
+            {"ByName", null, N_("By _Name"), null, null,                            Fm.FileColumn.NAME},
+            {"ByMTime", null, N_("By _Modification Time"), null, null,              Fm.FileColumn.MTIME}
         };
 
         /*** Action entries for popup menus ***/
         private const Gtk.ActionEntry _folder_menu_actions[] = {
-        /***{"NewTab", Gtk.Stock.NEW, N_("Open in New Tab"), null, null,                    _on_open_in_new_tab},***/
-            {"NewWin", Gtk.Stock.NEW, N_("Open in New Window"), null, null,                 _on_open_in_new_win},
+        /***{"NewTab", Gtk.Stock.NEW, N_("Open in New Tab"), null, null,            _on_open_in_new_tab},***/
+            {"NewWin", Gtk.Stock.NEW, N_("Open in New Window"), null, null,         _on_open_in_new_win},
             {"Search", Gtk.Stock.FIND, null, null, null, null}
         };
 
         private Gtk.UIManager   _ui;
         
         private Gtk.Toolbar     _toolbar;
-        private Gtk.Menu        _popup;
+        //private Gtk.Menu        _popup;
         private Gtk.HPaned      _hpaned;
         private Fm.FolderView   _folder_view;
         private Gtk.Statusbar   _statusbar;
@@ -271,11 +250,15 @@ namespace Manager {
                  * query FmFileInfo for home dir and root dir, and then,
                  * add them to dir tree model **/
                 
-                //Fm.Path desktop = new Fm.path.for_str ("");
                 job.add (Fm.Path.get_desktop ());
-                //job.add (Fm.Path.get_home ());
+                Fm.Path path = new Fm.Path.for_str (Environment.get_user_special_dir (UserDirectory.DOCUMENTS));
+                job.add (path);
+                path = new Fm.Path.for_uri ("computer:///");
+                job.add (path);
                 job.add (Fm.Path.get_trash ());
                 job.add (Fm.Path.get_root ());
+                
+                //job.add (Fm.Path.get_home ());
                 //job.add (Fm.Path.get_apps_menu ());
                 
                 /**
@@ -371,8 +354,8 @@ namespace Manager {
             gtk_menu_tool_button_set_menu (GTK_MENU_TOOL_BUTTON (toolitem), this.history_menu);
             g_signal_connect (toolitem, "show-menu", G_CALLBACK (_on_show_history_menu), win); ***/
 
-            _popup = ui.get_widget ("/popup") as Gtk.Menu;
-            _popup.attach_to_widget (this, null);
+            //_popup = ui.get_widget ("/popup") as Gtk.Menu;
+            //_popup.attach_to_widget (this, null);
 
             main_vbox.pack_start (menubar, false, true, 0);
             main_vbox.pack_start (_toolbar, false, true, 0);
@@ -632,8 +615,11 @@ namespace Manager {
 //~             }
         }
 
-        private void _on_sel_changed (Fm.FileInfoList files) {
-
+        private void _on_sel_changed (Fm.FileInfoList? files) {
+            
+            if (files == null)
+                return;
+                
 //~             // popup previous message if there is any 
 //~             gtk_statusbar_pop (GTK_STATUSBAR (win->statusbar), win->statusbar_ctx2);
 //~             if (files)
@@ -815,6 +801,33 @@ namespace Manager {
 
 
 
+
+        private void _on_go_back (Gtk.Action act) {
+
+            /*if (fm_nav_history_get_can_back (win->nav_history))
+            {
+                FmNavHistoryItem* item;
+                int scroll_pos = gtk_adjustment_get_value (gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (win->folder_view)));
+                fm_nav_history_back (win->nav_history, scroll_pos);
+                item = fm_nav_history_get_cur (win->nav_history);
+                // FIXME: should this be driven by a signal emitted on FmNavHistory? 
+                chdir_without_history (win, item->path);
+            }*/
+        }
+
+        private void _on_go_forward (Gtk.Action act) {
+
+            /*if (fm_nav_history_get_can_forward (win->nav_history))
+            {
+                FmNavHistoryItem* item;
+                int scroll_pos = gtk_adjustment_get_value (gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (win->folder_view)));
+                fm_nav_history_forward (win->nav_history, scroll_pos);
+                // FIXME: should this be driven by a signal emitted on FmNavHistory? 
+                item = fm_nav_history_get_cur (win->nav_history);
+                // FIXME: should this be driven by a signal emitted on FmNavHistory? 
+                chdir_without_history (win, item->path);
+            }*/
+        }
 
 
 
