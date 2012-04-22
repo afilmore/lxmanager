@@ -156,9 +156,9 @@ namespace Manager {
             {"Prop", Gtk.Stock.PROPERTIES, null, null, null,                        _on_prop}
         };
 
-/*        private const Gtk.ToggleActionEntry _main_win_toggle_actions[] = {
+        private const Gtk.ToggleActionEntry _main_win_toggle_actions[] = {
             {"ShowHidden", null, N_("Show _Hidden"), "<Ctrl>H", null,               _on_show_hidden, false}
-        };*/
+        };
 
         private const Gtk.RadioActionEntry _main_win_mode_actions[] = {
             {"IconView", null, N_("_Icon View"), null, null,                        Fm.FolderViewMode.ICON_VIEW},
@@ -184,6 +184,8 @@ namespace Manager {
             {"Search", Gtk.Stock.FIND, null, null, null, null}
         };
 
+        private Fm.Path         _current_dir;
+        
         private Gtk.UIManager   _ui;
         
         private Gtk.Toolbar     _toolbar;
@@ -215,7 +217,7 @@ namespace Manager {
             /***
             Gtk.ActionGroup act_grp;
             Gtk.Action act;
-            Gtk.AccelGroup accel_grp;
+            
             
             Gtk.Widget toolitem;
             Gtk.Widget next_btn;
@@ -224,6 +226,9 @@ namespace Manager {
             
             global_num_windows++;
 
+            _current_dir = new Fm.Path.for_str (Environment.get_user_special_dir (UserDirectory.DESKTOP));
+            
+            
             Gtk.VBox main_vbox = new Gtk.VBox (false, 0);
 
             _hpaned = new Gtk.HPaned ();
@@ -241,8 +246,7 @@ namespace Manager {
             
             if (global_dir_tree_model == null) {
 
-                //Fm.FileInfoJob job = new Fm.FileInfoJob (null, FM_FILE_INFO_JOB_NONE);
-                Fm.FileInfoJob job = new Fm.FileInfoJob (null, 0);
+                Fm.FileInfoJob job = new Fm.FileInfoJob (null, Fm.FileInfoJobFlags.NONE);
                 
                 unowned List<Fm.FileInfo>? l;
                 
@@ -286,11 +290,11 @@ namespace Manager {
             
             tree_view.set_model (global_dir_tree_model);
             
-            //tree_view.chdir (sp->cwd);
+            tree_view.chdir (_current_dir);
 
             scrolled_window.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
 
-            //tree_view.chdir.connect (on_dirtree_chdir, sp);
+            tree_view.directory_changed.connect (_on_tree_change_directory);
 
             tree_view.show();
             
@@ -303,8 +307,7 @@ namespace Manager {
             /**********************************************************************************************************/
             
             // Create The Folder View...
-            /*** _folder_view = new Fm.FolderView (Fm.FolderMode.LIST_VIEW); ***/
-            _folder_view = new Fm.FolderView (3);
+            _folder_view = new Fm.FolderView (Fm.FolderViewMode.LIST_VIEW);
             
             _folder_view.set_show_hidden (false);
             _folder_view.sort (Gtk.SortType.ASCENDING, Fm.FileColumn.NAME);
@@ -323,13 +326,13 @@ namespace Manager {
             Gtk.UIManager ui = new Gtk.UIManager ();
             Gtk.ActionGroup action_group = new Gtk.ActionGroup ("Main");
             action_group.add_actions (_main_win_actions, this);
-//~             action_group.add_toggle_actions (_main_win_toggle_actions);
-//~             action_group.add_radio_actions  (_main_win_mode_actions, Fm.FolderMode.ICON_VIEW, _on_change_mode);
-//~             action_group.add_radio_actions  (_main_win_sort_type_actions, Gtk.SortType.ASCENDING, _on_sort_type);
-//~             action_group.add_radio_actions  (_main_win_sort_by_actions, 0, _on_sort_by);
+            action_group.add_toggle_actions (_main_win_toggle_actions, null);
+            action_group.add_radio_actions  (_main_win_mode_actions, Fm.FolderViewMode.ICON_VIEW, _on_change_mode);
+            action_group.add_radio_actions  (_main_win_sort_type_actions, Gtk.SortType.ASCENDING, _on_sort_type);
+            action_group.add_radio_actions  (_main_win_sort_by_actions, 0, _on_sort_by);
 
-            //accel_grp = gtk_ui_manager_get_accel_group (ui);
-            //gtk_window_add_accel_group (GTK_WINDOW (win), accel_grp);
+            Gtk.AccelGroup accel_group = ui.get_accel_group ();
+            this.add_accel_group (accel_group);
             
             ui.insert_action_group (action_group, 0);
             ui.add_ui_from_string (global_main_menu_xml, -1);
@@ -465,6 +468,25 @@ namespace Manager {
             return true;
         }
         
+        private void _on_tree_change_directory (uint button, Fm.Path path) {
+        
+            /*** Commented in original code...
+            g_signal_handlers_block_by_func(win->places_view, on_places_chdir, win);
+            fm_main_win_chdir(win, path);
+            g_signal_handlers_unblock_by_func(win->places_view, on_places_chdir, win);
+            ***/
+            
+            /*if(sp->cwd)
+                fm_path_unref(sp->cwd);
+            sp->cwd = fm_path_ref(path);
+            g_signal_emit(sp, signals[CHDIR], 0, button, path);
+            */
+            
+            stdout.printf ("_on_tree_change_directory: %u, %s\n", button, path.to_str ());
+            _folder_view.chdir (path);
+            
+        }
+
 
         private void chdir_without_history (Fm.Path path) {
 
@@ -906,26 +928,26 @@ namespace Manager {
 
 
 
-        private void _on_show_hidden (Gtk.ToggleAction act) {
+        private void _on_show_hidden (Gtk.Action act) {
 
 //~             bool active = gtk_toggle_action_get_active (act);
 //~             fm_folder_view_set_show_hidden ( FM_FOLDER_VIEW (win->folder_view), active );
 //~             update_statusbar (win);
         }
 
-        private void _on_change_mode (Gtk.RadioAction act, Gtk.RadioAction cur) {
+        private void _on_change_mode (Gtk.Action act, Gtk.Action cur) {
 
 //~             int mode = gtk_radio_action_get_current_value (cur);
 //~             fm_folder_view_set_mode ( FM_FOLDER_VIEW (win->folder_view), mode );
         }
 
-        private void _on_sort_by (Gtk.RadioAction act, Gtk.RadioAction cur) {
+        private void _on_sort_by (Gtk.Action act, Gtk.Action cur) {
 
 //~             int val = gtk_radio_action_get_current_value (cur);
 //~             fm_folder_view_sort (FM_FOLDER_VIEW (win->folder_view), -1, val);
         }
 
-        private void _on_sort_type (Gtk.RadioAction act, Gtk.RadioAction cur) {
+        private void _on_sort_type (Gtk.Action act, Gtk.Action cur) {
 
 //~             int val = gtk_radio_action_get_current_value (cur);
 //~             fm_folder_view_sort (FM_FOLDER_VIEW (win->folder_view), val, -1);

@@ -210,17 +210,6 @@ void fm_side_pane_chdir(FmSidePane* sp, FmPath* path)
     fm_dir_tree_view_chdir(FM_DIR_TREE_VIEW(tree_view), path);
 }
 
-static void on_dirtree_chdir(FmDirTreeView* view, guint button, FmPath* path, FmSidePane* sp)
-{
-//    g_signal_handlers_block_by_func(win->places_view, on_places_chdir, win);
-//    fm_main_win_chdir(win, path);
-//    g_signal_handlers_unblock_by_func(win->places_view, on_places_chdir, win);
-    if(sp->cwd)
-        fm_path_unref(sp->cwd);
-    sp->cwd = fm_path_ref(path);
-    g_signal_emit(sp, signals[CHDIR], 0, button, path);
-}
-
 
 /**********************************************************************************************************************/
 

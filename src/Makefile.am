@@ -18,10 +18,11 @@ exo_SOURCES = \
 	$(NULL)
 
 gtk_SOURCES = \
+	gtk/fm-cell-renderer-text.c \
 	gtk/fm-dir-tree-model.c \
 	gtk/fm-dir-tree-view.c \
 	gtk/fm-folder-view.c \
-	gtk/fm-cell-renderer-text.c \
+	gtk/fm-path-entry.c \
 	$(NULL)
 
 lxmanager_SOURCES = \

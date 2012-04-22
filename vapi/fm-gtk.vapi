@@ -17,7 +17,7 @@ namespace Fm {
 	
     
     /*************************************************************************************
-     * Fm.TreeView
+     * Fm.DirTreeView
      * 
      * 
      ************************************************************************************/
@@ -47,7 +47,7 @@ namespace Fm {
         public void chdir (Fm.Path path);
 		public unowned Fm.Path get_cwd ();
         
-		public virtual signal void directory_changed (uint button, void* path);
+		public virtual signal void directory_changed (uint button, Fm.Path path);
 	}
     
     
