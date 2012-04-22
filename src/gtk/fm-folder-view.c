@@ -40,7 +40,7 @@
 #include "fm-dnd-auto-scroll.h"
 
 enum{
-    CHDIR,
+    DIRECTORY_CHANGED,
     LOADED,
     CLICKED,
     SEL_CHANGED,
@@ -86,16 +86,16 @@ static void fm_folder_view_class_init(FmFolderViewClass *klass)
     widget_class = GTK_WIDGET_CLASS(klass);
     widget_class->focus_in_event = on_folder_view_focus_in;
     fv_class = FM_FOLDER_VIEW_CLASS(klass);
-    fv_class->chdir = on_chdir;
+    fv_class->directory_changed = on_chdir;
     fv_class->loaded = on_loaded;
 
     fm_folder_view_parent_class = (GtkScrolledWindowClass*)g_type_class_peek(GTK_TYPE_SCROLLED_WINDOW);
 
-    signals[CHDIR]=
-        g_signal_new("chdir",
+    signals[DIRECTORY_CHANGED]=
+        g_signal_new("directory-changed",
                      G_TYPE_FROM_CLASS(klass),
                      G_SIGNAL_RUN_FIRST,
-                     G_STRUCT_OFFSET(FmFolderViewClass, chdir),
+                     G_STRUCT_OFFSET(FmFolderViewClass, directory_changed),
                      NULL, NULL,
                      g_cclosure_marshal_VOID__POINTER,
                      G_TYPE_NONE, 1, G_TYPE_POINTER);
@@ -892,7 +892,7 @@ gboolean fm_folder_view_chdir(FmFolderView* fv, FmPath* path)
     }
 
     /* FIXME: the signal handler should be able to cancel the loading. */
-    g_signal_emit(fv, signals[CHDIR], 0, path);
+    g_signal_emit(fv, signals[DIRECTORY_CHANGED], 0, path);
     if(fv->cwd)
         fm_path_unref(fv->cwd);
     fv->cwd = fm_path_ref(path);
