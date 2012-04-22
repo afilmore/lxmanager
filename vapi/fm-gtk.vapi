@@ -17,6 +17,25 @@ namespace Fm {
 	
     
     /*************************************************************************************
+     * Fm.PathEntry
+     * 
+     * 
+     ************************************************************************************/
+	[CCode (cheader_filename = "gtk/fm-path-entry.h")]
+	public class PathEntry : Gtk.Entry, Atk.Implementor, Gtk.Buildable, Gtk.Editable, Gtk.CellEditable {
+		
+        [CCode (has_construct_function = false, type = "GtkWidget*")]
+		public PathEntry ();
+		
+        public unowned Fm.Path get_path ();
+		public void set_path (Fm.Path path);
+		
+        [NoAccessorMethod]
+		public bool highlight_completion_match { get; set; }
+	}
+
+
+    /*************************************************************************************
      * Fm.DirTreeView
      * 
      * 

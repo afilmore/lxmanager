@@ -194,9 +194,9 @@ namespace Manager {
         private Fm.FolderView   _folder_view;
         private Gtk.Statusbar   _statusbar;
         private Gtk.Frame       _vol_status;
+        private Fm.PathEntry    _location;
         
         /***
-        private Gtk.Widget      _location;
         private Fm.Folder       _folder;
         private Gtk.Widget      _left_pane;
         private Gtk.Widget      _bookmarks_menu;
@@ -219,7 +219,6 @@ namespace Manager {
             Gtk.Action act;
             
             
-            Gtk.Widget toolitem;
             Gtk.Widget next_btn;
             Gtk.Widget scroll;
             ***/
@@ -367,15 +366,15 @@ namespace Manager {
             load_bookmarks (win, ui);***/
 
             // The location bar 
-//~             _location = new Fm.PathEntry ();
-//~             _location.activate.connect (_on_entry_activate);
+            _location = new Fm.PathEntry ();
+            _location.activate.connect (_on_entry_activate);
 
-            /***
-            toolitem = gtk_tool_item_new ();
-            gtk_container_add ( GTK_CONTAINER (toolitem), this.location );
-            gtk_tool_item_set_expand (GTK_TOOL_ITEM (toolitem), true);
-            gtk_toolbar_insert ( (Gtk.Toolbar)this.toolbar, toolitem, gtk_toolbar_get_n_items (GTK_TOOLBAR (this.toolbar)) - 1 );
-            ***/
+            /******/
+            Gtk.ToolItem toolitem = new Gtk.ToolItem ();
+            toolitem.add (_location);
+            toolitem.set_expand (true);
+            _toolbar.insert (toolitem, _toolbar.get_n_items () - 1);
+            
             
             main_vbox.pack_start (_hpaned, true, true, 0);
 
