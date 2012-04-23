@@ -354,6 +354,7 @@ private void on_history_item (GtkMenuItem* mi) {
     int scroll_pos = gtk_adjustment_get_value (gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (win->folder_view)));
     fm_nav_history_jump (win->nav_history, l, scroll_pos);
     item = fm_nav_history_get_cur (win->nav_history);
+    
     // FIXME: should this be driven by a signal emitted on FmNavHistory? 
     chdir_without_history (win, item->path);
 }
