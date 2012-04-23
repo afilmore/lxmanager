@@ -17,6 +17,52 @@
  * 
  **********************************************************************************************************************/
 
+        private void _folder_view_on_view_loaded (Fm.Path path) {
+
+            /***const FmNavHistoryItem item;
+             =  (FmMainWin)user_data;
+            Fm.PathEntry entry = FM_PATH_ENTRY (win->location);
+
+            fm_path_entry_set_path ( entry, path );
+
+            // scroll to recorded position 
+            item = fm_nav_history_get_cur (win->nav_history);
+            gtk_adjustment_set_value ( gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (view)), item->scroll_pos);
+
+            // update status bar 
+            this._update_statusbar ();***/
+        }
+
+         private bool open_folder_func (AppLaunchContext ctx, List folder_infos, void * user_data, Error err) {
+
+//~              = FM_MAIN_WIN (user_data);
+//~             GList l = folder_infos;
+//~             Fm.FileInfo fi =  (Fm.FileInfo)l->data;
+//~             chdir (win, fi->path);
+//~             l=l->next;
+//~             for (; l; l=l->next)
+//~             {
+//~                 Fm.FileInfo fi =  (Fm.FileInfo)l->data;
+//~                 // FIXME: open in new window 
+//~             }
+            return true;
+        }
+
+       private void chdir_by_name (string path_str) {
+
+//~             Fm.Path path;
+//~             string tmp;
+//~             path = fm_path_new_for_str (path_str);
+
+//~             chdir_without_history (win, path);
+
+//~             tmp = fm_path_display_name (path, FALSE);
+//~             gtk_entry_set_text (GTK_ENTRY (win->location), tmp);
+//~             g_free (tmp);
+//~             fm_path_unref (path);
+        }
+        
+
     private const string global_main_menu_xml = """
         <menubar>
           

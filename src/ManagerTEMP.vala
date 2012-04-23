@@ -452,7 +452,7 @@ namespace Manager {
 //~             g_object_ref (win->folder);
 //~             g_signal_connect (win->folder, "fs-info", G_CALLBACK (_on_folder_fs_info), win);
 
-            update_statusbar ();
+            this._update_statusbar ();
             // commented in original code fm_nav_history_set_cur (); 
         }
         
